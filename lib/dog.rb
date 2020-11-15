@@ -65,20 +65,30 @@ class Dog
 end
 
     def self.new_from_db(row)
-        new_dog = self.new
-        new_dog.id = row[0]
-        new_dog.name =  row[1]
-        new_dog.breed = row[2]
-        new_dog  # return the newly created instance
+        id = row[0]
+        name = row[1]
+        breed = row[2]
+        new_dog = Dog.new(name: name, breed: breed, id: id) # return the newly created instance
     end
 
     def self.find_by_id(id)
-        sql = "SELECT * FROM dogs WHERE id = ?"
+        sql = <<-SQL
+        SELECT * FROM dogs WHERE id = ?
+        LIMIT 1
+        SQL
         result = DB[:conn].execute(sql, id)[0]
-        Dog.new(result[0], result[1], result[2]) #could also use .new_from_db
+         #could also use .new_from_db
+        Dog.new(id: result[0], name: result[1], breed: result[2])
     end
 
-    def self.find_by_name
+    def self.find_by_name(name)
+        sql = <<-SQL
+        SELECT * FROM dogs WHERE name = ?
+        LIMIT 1
+        SQL
+        result = DB[:conn].execute(sql, name)[0]
+         #could also use .new_from_db
+        Dog.new(id: result[0], name: result[1], breed: result[2])
     end
 
     def update
